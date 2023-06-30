@@ -3,7 +3,7 @@ from django.db import models
 
 class Tittle(models.Model):
     name = models.CharField(
-        'название',
+        'Название',
         max_length=200,
         db_index=True
     )
@@ -43,7 +43,7 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
-      
+
 class Genre(models.Model):
     name = models.CharField(max_length=100)
     slug = models.SlugField(
