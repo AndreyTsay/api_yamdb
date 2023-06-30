@@ -43,7 +43,7 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
-
+      
 class Genre(models.Model):
     name = models.CharField(max_length=100)
     slug = models.SlugField(
@@ -57,3 +57,16 @@ class Genre(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Comment(models.Model):
+    text = models.TextField()
+    author = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='comments'
+    )
+    review = models.ForeignKey(
+        Review, on_delete=models.CASCADE, related_name='comments'
+    )
+    pub_date = models.DateTimeField(
+        'Дата добавления', auto_now_add=True, db_index=True
+    )
