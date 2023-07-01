@@ -4,6 +4,7 @@ from django.db import migrations, models
 import django.db.models.deletion
 
 
+
 class Migration(migrations.Migration):
 
     initial = True
@@ -43,6 +44,7 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(db_index=True, max_length=200, verbose_name='название')),
                 ('category', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='titles', to='reviews.category', verbose_name='категория')),
                 ('genre', models.ManyToManyField(related_name='titles', to='reviews.Genre', verbose_name='жанр')),
+
             ],
             options={
                 'verbose_name': 'Произведение',
