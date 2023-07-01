@@ -1,39 +1,12 @@
 from django.db import models
 
 
-class Tittle(models.Model):
-    name = models.CharField(
-        'Название',
-        max_length=200,
-        db_index=True
-    )
-    year = models.IntegerField
-    category = models.ForeignKey(
-        'Category',
-        on_delete=models.SET_NULL,
-        related_name='titles',
-        verbose_name='категория',
-        null=True,
-        blank=True
-    )
-    genre = models.ManyToManyField(
-        'Genre',
-        related_name='titles',
-        verbose_name='жанр'
-    )
-
-    class Meta:
-        verbose_name = 'Произведение'
-        verbose_name_plural = 'Произведения'
-
-    def __str__(self):
-        return self.name
-
 
 class Category(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=256)
     slug = models.SlugField(
-        unique=True, db_index=True
+        max_length=50,
+        unique=True
     )
 
     class Meta:
@@ -45,10 +18,11 @@ class Category(models.Model):
 
 
 class Genre(models.Model):
-    name = models.CharField(max_length=100)
+
+    name = models.CharField(max_length=256)
     slug = models.SlugField(
-        unique=True,
-        db_index=True
+        max_length=50,
+        unique=True
     )
 
     class Meta:
@@ -58,6 +32,40 @@ class Genre(models.Model):
     def __str__(self):
         return self.name
 
+
+class Tittle(models.Model):
+    name = models.CharField(
+        'название',
+        max_length=256,
+        db_index=True
+    )
+    year = models.IntegerField
+    category = models.ForeignKey(
+        Category,
+        on_delete=models.SET_NULL,
+        related_name='titles',
+        verbose_name='категория',
+        null=True,
+        blank=True
+    )
+    description = models.TextField(
+        'описание',
+        max_length=256,
+        null=True,
+        blank=True
+    )
+    genre = models.ManyToManyField(
+        Genre,
+        related_name='titles',
+        verbose_name='Жанр'
+    )
+
+    class Meta:
+        verbose_name = 'Произведение'
+        verbose_name_plural = 'Произведения'
+
+    def __str__(self):
+        return self.name
 
 class Comment(models.Model):
     text = models.TextField()
