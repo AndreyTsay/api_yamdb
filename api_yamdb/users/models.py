@@ -1,13 +1,15 @@
 from django.contrib.auth.base_user import AbstractBaseUser
+from django.contrib.auth.models import AbstractUser
 from django.db import models
+from rest_framework_simplejwt.tokens import RefreshToken
 
 
 # Create your models here.
-class User(AbstractBaseUser):
+class User(AbstractUser):
     ROLES = (
-        ('User', 'User'),
-        ('Moderator', 'Moderator'),
-        ('Admin', 'Admin'),
+        ('User', 'Обычный пользователь '),
+        ('Moderator', 'Модератор'),
+        ('Admin', 'Админ'),
     )
 
     username = models.CharField(max_length=150, unique=True,
@@ -20,8 +22,10 @@ class User(AbstractBaseUser):
 
     role = models.CharField(max_length=9, choices=ROLES, default='User',
                             verbose_name="Роль пользователя")
-    USERNAME_FIELD = ['username', 'email']
-    REQUIRED_FIELDS = ('username', 'email',)
+    confirmation_code = models.CharField(max_length=4, default='0000',
+                                         verbose_name="Код подтверждения")
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['username', ]
 
     @property
     def is_user(self):
