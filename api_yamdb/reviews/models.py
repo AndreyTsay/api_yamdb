@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class Tittle(models.Model):
     name = models.CharField(
         'Название',
