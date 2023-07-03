@@ -3,7 +3,8 @@ from users.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator
 
 
-class Title(models.Model):
+class Tittle(models.Model):
+
     name = models.CharField(
         'Название',
         max_length=200,
