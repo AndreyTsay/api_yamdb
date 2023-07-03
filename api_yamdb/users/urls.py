@@ -13,4 +13,3 @@ urlpatterns = [
     path('api/v1/auth/signup/', SignUpViewSet.as_view(), name="signup"),
     path('api/v1/auth/token/', TokenObtainPairView.as_view(), name="token"),
 ]
-

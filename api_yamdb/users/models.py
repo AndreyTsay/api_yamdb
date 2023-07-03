@@ -25,7 +25,7 @@ class User(AbstractUser):
     confirmation_code = models.CharField(max_length=4, default='0000',
                                          verbose_name="Код подтверждения")
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username']
+    REQUIRED_FIELDS = ['username', ]
 
     @property
     def is_user(self):

@@ -1,5 +1,4 @@
 from rest_framework import serializers
-
 from api_yamdb.users.models import User
 
 
