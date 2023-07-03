@@ -1,5 +1,4 @@
 from rest_framework import serializers
-
 from api_yamdb.users.models import User
 
 
@@ -15,10 +14,8 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class TokenSerializer(serializers.ModelSerializer):
-    username = serializers.CharField(max_length=150, unique=True,
-                                     verbose_name='Никнейм пользователя')
-    confirmation_code = serializers.CharField(max_length=4, default='0000',
-                                              verbose_name="Код подтверждения")
+    username = serializers.CharField()
+    confirmation_code = serializers.CharField()
 
     def validate(self, validated_data):
         user = User.objects.get(username=validated_data['username'])
@@ -28,10 +25,8 @@ class TokenSerializer(serializers.ModelSerializer):
 
 
 class SignUpSerializer(serializers.ModelSerializer):
-    username = serializers.CharField(max_length=150, unique=True,
-                                     verbose_name='Никнейм пользователя')
-    email = serializers.EmailField(max_length=254, unique=True,
-                                   verbose_name="Почта")
+    username = serializers.CharField()
+    email = serializers.EmailField()
 
     def validate(self, validated_data):
         if validated_data == 'me':
