@@ -24,6 +24,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'api',
     'reviews',
+    'rest_framework_simplejwt',
 
 ]
 
@@ -114,3 +115,4 @@ SIMPLE_JWT = {
 }
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+

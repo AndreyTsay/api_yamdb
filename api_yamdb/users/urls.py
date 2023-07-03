@@ -12,3 +12,4 @@ urlpatterns = [
     path('auth/signup/', SignUpViewSet.as_view(), name="signup"),
     path('auth/token/', TokenViewSet.as_view(), name="token"),
 ]
+

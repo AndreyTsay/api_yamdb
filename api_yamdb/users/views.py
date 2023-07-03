@@ -22,3 +22,4 @@ class SignUpViewSet(viewsets.ModelViewSet):
 
 class TokenViewSet(viewsets.ModelViewSet):
     serializer_class = TokenSerializer
+
