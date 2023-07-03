@@ -23,4 +23,3 @@ class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
     serializer_class = TitleSerializer
     permission_classes = (OwnerOrReadOnly)
-

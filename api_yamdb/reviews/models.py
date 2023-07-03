@@ -1,7 +1,6 @@
 from django.db import models
 
 
-
 class Category(models.Model):
     name = models.CharField(max_length=256)
     slug = models.SlugField(
@@ -33,7 +32,7 @@ class Genre(models.Model):
         return self.name
 
 
-class Tittle(models.Model):
+class Title(models.Model):
     name = models.CharField(
         'название',
         max_length=256,
@@ -66,6 +65,7 @@ class Tittle(models.Model):
 
     def __str__(self):
         return self.name
+
 
 class Comment(models.Model):
     text = models.TextField()
