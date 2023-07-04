@@ -40,7 +40,8 @@ class Title(models.Model):
         max_length=256,
         db_index=True
     )
-    year = models.IntegerField
+    year = models.PositiveIntegerField(
+        verbose_name='год выпуска')
     category = models.ForeignKey(
         Category,
         on_delete=models.SET_NULL,
@@ -58,6 +59,7 @@ class Title(models.Model):
     genre = models.ManyToManyField(
         Genre,
         related_name='titles',
+        blank=True,
         verbose_name='Жанр'
     )
 
@@ -111,3 +113,24 @@ class Comment(models.Model):
     pub_date = models.DateTimeField(
         'Дата добавления', auto_now_add=True, db_index=True
     )
+
+
+class GenreTitle(models.Model):
+    genre = models.ForeignKey(
+        Genre,
+        on_delete=models.CASCADE,
+        verbose_name='Жанр'
+    )
+    title = models.ForeignKey(
+        Title,
+        on_delete=models.CASCADE,
+        verbose_name='произведение'
+    )
+
+    class Meta:
+        verbose_name = 'Соответствие жанра и произведения'
+        verbose_name_plural = 'Таблица соответствия жанров и произведений'
+        ordering = ('id',)
+
+    def __str__(self):
+        return f'{self.title} принадлежит жанру/ам {self.genre}'
