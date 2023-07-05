@@ -7,6 +7,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 
 from users.views import UsersViewSet, SignUpViewSet
 
+
 router = SimpleRouter()
 
 router.register('category', CategoryViewSet)
