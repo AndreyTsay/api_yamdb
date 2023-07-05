@@ -6,10 +6,11 @@ from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
+from rest_framework.views import APIView
 
-from api_yamdb.users import permissions
-from api_yamdb.users.models import User
-from api_yamdb.users.serializers import UserSerializer, SignUpSerializer
+from users import permissions
+from users.models import User
+from users.serializers import UserSerializer, SignUpSerializer
 EMAIL = "myemail@mail.ru"
 
 
@@ -37,7 +38,7 @@ class UsersViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=HTTP_200_OK)
 
 
-class SignUpViewSet(viewsets.ModelViewSet):
+class SignUpViewSet(APIView):
     serializer_class = SignUpSerializer
     permission_classes = (AllowAny,)
     pagination_class = LimitOffsetPagination

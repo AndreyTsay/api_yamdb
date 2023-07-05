@@ -40,7 +40,7 @@ class Title(models.Model):
         max_length=256,
         db_index=True
     )
-    year = models.IntegerField
+    year = models.IntegerField()
     category = models.ForeignKey(
         Category,
         on_delete=models.SET_NULL,
