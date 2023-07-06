@@ -11,9 +11,9 @@ from users.views import UsersViewSet, SignUpViewSet
 
 router = SimpleRouter()
 
-router.register('category', CategoryViewSet)
-router.register('genre', GenreViewSet)
-router.register('title', TitleViewSet)
+router.register('categories', CategoryViewSet)
+router.register('genres', GenreViewSet)
+router.register('titles', TitleViewSet)
 router.register('users', UsersViewSet, basename='users')
 
 urlpatterns_users = [
