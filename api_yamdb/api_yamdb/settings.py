@@ -1,3 +1,4 @@
+import os
 from datetime import timedelta
 from pathlib import Path
 
@@ -12,6 +13,8 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 # Application definition
+
+AUTH_USER_MODEL = "users.User"
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -40,7 +43,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'api_yamdb.urls'
 
-TEMPLATES_DIR = BASE_DIR / 'templates'
+TEMPLATES_DIR = os.path.join(BASE_DIR, "templates")
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -114,6 +117,9 @@ SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
+CSV_FILES_DIR = os.path.join(BASE_DIR, 'static/data')
+
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+AUTH_USER_MODEL = "users.User"

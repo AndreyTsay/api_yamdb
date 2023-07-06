@@ -40,7 +40,7 @@ class Title(models.Model):
         max_length=256,
         db_index=True
     )
-    year = models.IntegerField
+    year = models.IntegerField()
     category = models.ForeignKey(
         Category,
         on_delete=models.SET_NULL,
@@ -70,7 +70,6 @@ class Title(models.Model):
 
 
 class Review(models.Model):
-
     title = models.ForeignKey(
         Title,
         on_delete=models.CASCADE,

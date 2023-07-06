@@ -17,7 +17,7 @@ class GenreSerializer(serializers.ModelSerializer):
         model = Genre
 
 
-class TitleReadSerializer(serializers.ModelSerializer):
+class TitleSerializer(serializers.ModelSerializer):
     category = CategorySerializer(
         read_only=True
     )
