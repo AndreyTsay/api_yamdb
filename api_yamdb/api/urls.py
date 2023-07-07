@@ -6,7 +6,7 @@ from rest_framework.routers import SimpleRouter
 from api import views
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-from users.views import UsersViewSet, SignUpViewSet
+from users.views import UsersViewSet, SignUpViewSet, TokenViewSet
 
 
 router = SimpleRouter()
@@ -14,7 +14,7 @@ router = SimpleRouter()
 router.register('categories', views.CategoryViewSet)
 router.register('genres', views.GenreViewSet)
 router.register('titles', views.TitleViewSet)
-router.register('users', UsersViewSet, basename='users')
+router.register(r'users', UsersViewSet, basename='users')
 router.register(r'titles/(?P<title_id>\d+)/reviews',
                 views.ReviewViewSet,
                 basename='reviews')
@@ -32,11 +32,10 @@ router.register(
     views.CommentViewSet,
     basename='comments'
 )
-urlpatterns_users = [
-    path('auth/token/', TokenObtainPairView, name="token"),
-    path('auth/signup/', SignUpViewSet, name="signup")
-]
+
+
 urlpatterns = [
-    path("v1/", include(router.urls)),
-    path("v1/", include(urlpatterns_users)),
+    path('v1/', include(router.urls)),
+    path('v1/auth/token/', TokenViewSet.as_view(), name="token"),
+    path('v1/auth/signup/', SignUpViewSet.as_view(), name="signup"),
 ]
