@@ -1,4 +1,3 @@
-
 from django.urls import path, include
 from rest_framework import routers
 from rest_framework.routers import SimpleRouter
@@ -7,7 +6,6 @@ from api import views
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 from users.views import UsersViewSet, SignUpViewSet, TokenViewSet
-
 
 router = SimpleRouter()
 
@@ -32,7 +30,6 @@ router.register(
     views.CommentViewSet,
     basename='comments'
 )
-
 
 urlpatterns = [
     path('v1/', include(router.urls)),
