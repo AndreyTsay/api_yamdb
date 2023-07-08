@@ -1,4 +1,5 @@
 from django_filters.rest_framework import DjangoFilterBackend
+from django.db.models import Avg
 from rest_framework import filters, viewsets, mixins, status
 from django.shortcuts import get_object_or_404
 from rest_framework.pagination import LimitOffsetPagination
@@ -6,6 +7,7 @@ from api.permissions import OwnerOrReadOnly
 from api import serializers
 from reviews.models import Category, Genre, Title, Review, Comment
 from rest_framework.response import Response
+from api.filters import TitleFilter
 
 
 class GetPostDeleteViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
@@ -16,6 +18,7 @@ class GetPostDeleteViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
 class GenreViewSet(GetPostDeleteViewSet):
     queryset = Genre.objects.all()
     serializer_class = serializers.GenreSerializer
+    pagination_class = LimitOffsetPagination
     permission_classes = (OwnerOrReadOnly,)
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
     search_fields = ('name',)
@@ -32,10 +35,13 @@ class CategoryViewSet(GetPostDeleteViewSet):
 
 
 class TitleViewSet(viewsets.ModelViewSet):
-    queryset = Title.objects.all()
+    queryset = Title.objects.annotate(
+        rating=Avg('reviews__score')
+    ).all()
     serializer_class = serializers.TitleSerializer
     permission_classes = (OwnerOrReadOnly,)
     filter_backends = (DjangoFilterBackend, )
+    filterset_class = TitleFilter
 
     def get_serializer_class(self):
         if self.action in ('list', 'retrieve'):
@@ -84,7 +90,7 @@ class CommentViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         review = get_object_or_404(
             Review,
-            id=self.kwargs['review_id'],    
+            id=self.kwargs['review_id'],
             title__id=self.kwargs['title_id']
         )
         return review.comments.all()
