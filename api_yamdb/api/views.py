@@ -3,7 +3,7 @@ from django.db.models import Avg
 from rest_framework import filters, viewsets, mixins, status
 from django.shortcuts import get_object_or_404
 from rest_framework.pagination import LimitOffsetPagination
-from api.permissions import OwnerOrReadOnly
+from api.permissions import IsAdminOrReadOnly
 from api import serializers
 from reviews.models import Category, Genre, Title, Review, Comment
 from rest_framework.response import Response
@@ -19,7 +19,7 @@ class GenreViewSet(GetPostDeleteViewSet):
     queryset = Genre.objects.all()
     serializer_class = serializers.GenreSerializer
     pagination_class = LimitOffsetPagination
-    permission_classes = (OwnerOrReadOnly,)
+    permission_classes = (IsAdminOrReadOnly,)
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
     search_fields = ('name',)
     lookup_field = 'slug'
@@ -28,7 +28,7 @@ class GenreViewSet(GetPostDeleteViewSet):
 class CategoryViewSet(GetPostDeleteViewSet):
     queryset = Category.objects.all()
     serializer_class = serializers.CategorySerializer
-    permission_classes = (OwnerOrReadOnly,)
+    permission_classes = (IsAdminOrReadOnly,)
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
     search_fields = ('name',)
     lookup_field = 'slug'
@@ -39,7 +39,7 @@ class TitleViewSet(viewsets.ModelViewSet):
         rating=Avg('reviews__score')
     ).all()
     serializer_class = serializers.TitleSerializer
-    permission_classes = (OwnerOrReadOnly,)
+    permission_classes = (IsAdminOrReadOnly,)
     filter_backends = (DjangoFilterBackend, )
     filterset_class = TitleFilter
 
