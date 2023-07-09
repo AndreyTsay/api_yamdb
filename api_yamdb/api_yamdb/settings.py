@@ -130,3 +130,4 @@ CSV_FILES_DIR = os.path.join(BASE_DIR, 'static/data')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = "users.User"
+LENGTH_TEXT = 15

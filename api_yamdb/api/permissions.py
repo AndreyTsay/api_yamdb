@@ -26,6 +26,13 @@ class IsSuperUserOrIsAdminOnly(permissions.BasePermission):
         )
 
 
+class AnonimReadOnly(permissions.BasePermission):
+    """Разрешает анонимному пользователю только безопасные запросы."""
+
+    def has_permission(self, request, view):
+        return request.method in permissions.SAFE_METHODS
+
+
 class IsSuperUserIsAdminIsModeratorIsAuthor(permissions.BasePermission):
     """
     Разрешает анонимному пользователю только безопасные запросы.
@@ -41,5 +48,6 @@ class IsSuperUserIsAdminIsModeratorIsAuthor(permissions.BasePermission):
             and (request.user.is_superuser
                  or request.user.is_staff
                  or request.user.is_admin
-                 or request.user.is_moderator)
-        )
+                 or request.user.is_moderator
+                 or request.user == obj.author)
+                )
