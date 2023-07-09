@@ -1,58 +1,79 @@
+from datetime import datetime
 from django.db import models
 from users.models import User
-from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.validators import (MinValueValidator,
+                                    MaxValueValidator, RegexValidator)
+from api_yamdb.settings import LENGTH_TEXT
 
 
 class Category(models.Model):
-    name = models.CharField(max_length=256)
+    name = models.CharField(max_length=256,
+                            verbose_name='Hазвание',
+                            db_index=True)
     slug = models.SlugField(
         max_length=50,
-        unique=True
+        unique=True,
+        validators=[RegexValidator(
+            regex=r'^[-a-zA-Z0-9_]+$',
+            message='Слаг категории содержит недопустимый символ'
+        )]
     )
 
     class Meta:
         verbose_name = 'Категория'
         verbose_name_plural = 'Категории'
+        ordering = ('name',)
 
     def __str__(self):
-        return self.name
+        return self.name[:LENGTH_TEXT]
 
 
 class Genre(models.Model):
 
-    name = models.CharField(max_length=256)
+    name = models.CharField(max_length=75,
+                            verbose_name='Hазвание',
+                            db_index=True)
     slug = models.SlugField(
         max_length=50,
-        unique=True
+        verbose_name='slug',
+        unique=True,
+        validators=[RegexValidator(
+            regex=r'^[-a-zA-Z0-9_]+$',
+            message='Слаг жанра содержит недопустимый символ'
+        )]
     )
 
     class Meta:
         verbose_name = 'Жанр'
         verbose_name_plural = 'Жанры'
+        ordering = ('name',)
 
     def __str__(self):
-        return self.name
+        return self.name[:LENGTH_TEXT]
 
 
 class Title(models.Model):
     name = models.CharField(
-        'название',
         max_length=150,
+        verbose_name='Hазвание',
         db_index=True
     )
-    year = models.IntegerField()
-    category = models.ForeignKey(
-        Category,
-        on_delete=models.SET_NULL,
-        related_name='titles',
-        verbose_name='категория',
-        null=True,
-        blank=True
+    year = models.PositiveIntegerField(
+        verbose_name='год выпуска',
+        validators=[
+            MinValueValidator(
+                0,
+                message='Значение года не может быть отрицательным'
+            ),
+            MaxValueValidator(
+                int(datetime.now().year),
+                message='Значение года не может быть больше текущего'
+            )
+        ],
+        db_index=True
     )
     description = models.TextField(
-        'описание',
-        max_length=256,
-        null=True,
+        verbose_name='описание',
         blank=True
     )
     genre = models.ManyToManyField(
@@ -60,14 +81,23 @@ class Title(models.Model):
         through='GenreTitle',
         related_name='titles',
         verbose_name='жанр'
+
+    )
+    category = models.ForeignKey(
+        Category,
+        on_delete=models.SET_NULL,
+        related_name='titles',
+        verbose_name='категория',
+        null=True
     )
 
     class Meta:
         verbose_name = 'Произведение'
         verbose_name_plural = 'Произведения'
+        ordering = ('-year', 'name')
 
     def __str__(self):
-        return self.name
+        return self.name[:LENGTH_TEXT]
 
 
 class GenreTitle(models.Model):
