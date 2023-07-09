@@ -2,8 +2,7 @@ from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, filters
-from rest_framework.decorators import action, permission_classes, api_view
-from rest_framework.pagination import LimitOffsetPagination
+from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
@@ -25,7 +24,7 @@ EMAIL = "myemail@mail.ru"
 class UsersViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [AllowAny, IsAdmin]
+    permission_classes = [IsAdmin]
     filter_backends = [filters.SearchFilter]
     lookup_field = 'username'
     search_fields = ('username',)
@@ -37,20 +36,19 @@ class UsersViewSet(viewsets.ModelViewSet):
         permission_classes=[IsAuthenticated, ],
     )
     def me(self, request):
-        if request.method == 'GET':
-            serializer = UserSerializer(request.user)
-            return Response(serializer.data, status=HTTP_200_OK)
-        serializer = UserSerializer(request.user, data=request.data,
-                                    partial=True)
-        serializer.is_valid(raise_exception=True)
-        serializer.save(role=request.user.role, partial=True)
+        user = get_object_or_404(User, username=self.request.user)
+        serializer = UserSerializer(user)
+        if request.method == 'PATCH':
+            serializer = UserSerializer(
+                user, data=request.data, partial=True)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
         return Response(serializer.data, status=HTTP_200_OK)
 
 
 class SignUpViewSet(APIView):
     queryset = User.objects.all()
     serializer_class = SignUpSerializer
-    permission_classes = [AllowAny, ]
 
     def post(self, request):
         serializer = SignUpSerializer(data=request.data)
@@ -70,6 +68,4 @@ class SignUpViewSet(APIView):
 
 
 class TokenViewSet(TokenViewBase):
-    queryset = User.objects.all()
     serializer_class = TokenSerializer
-    permission_classes = (AllowAny,)

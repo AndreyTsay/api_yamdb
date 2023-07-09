@@ -7,9 +7,9 @@ from rest_framework_simplejwt.tokens import RefreshToken
 # Create your models here.
 class User(AbstractUser):
     ROLES = (
-        ('User', 'Обычный пользователь '),
-        ('Moderator', 'Модератор'),
-        ('Admin', 'Админ'),
+        ('user', 'Обычный пользователь '),
+        ('moderator', 'Модератор'),
+        ('admin', 'Админ'),
     )
 
     username = models.CharField(max_length=150, unique=True,
@@ -20,7 +20,7 @@ class User(AbstractUser):
     last_name = models.CharField(max_length=150, verbose_name="Фамилия")
     bio = models.TextField(verbose_name="Инфа о пользователе")
 
-    role = models.CharField(max_length=9, choices=ROLES, default='User',
+    role = models.CharField(max_length=9, choices=ROLES, default='user',
                             verbose_name="Роль пользователя")
     confirmation_code = models.CharField(max_length=4, default='0000',
                                          verbose_name="Код подтверждения")
@@ -37,7 +37,7 @@ class User(AbstractUser):
 
     @property
     def is_admin(self):
-        return self.role == User.ROLES[2][0] or self.is_superuser
+        return self.role == User.ROLES[2][0]
 
     def __str__(self):
         return self.username
