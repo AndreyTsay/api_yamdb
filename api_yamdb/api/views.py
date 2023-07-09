@@ -1,15 +1,17 @@
-from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Avg
-from rest_framework import filters, viewsets, mixins, status
+from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import get_object_or_404
+from rest_framework import filters, viewsets, mixins, status
+from rest_framework import permissions
 from rest_framework.pagination import LimitOffsetPagination
+from rest_framework.response import Response
+
+from api import serializers
+from api.filters import TitleFilter
 from api.permissions import (IsAdminOrReadOnly, IsSuperUserOrIsAdminOnly,
                              IsSuperUserIsAdminIsModeratorIsAuthor)
-from api import serializers
+
 from reviews.models import Category, Genre, Title, Review
-from rest_framework.response import Response
-from api.filters import TitleFilter
-from rest_framework import permissions
 
 
 class GetPostDeleteViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
@@ -108,4 +110,3 @@ class CommentViewSet(viewsets.ModelViewSet):
             author=self.request.user,
             review=self.get_review()
         )
-

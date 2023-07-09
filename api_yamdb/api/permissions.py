@@ -2,12 +2,15 @@ from rest_framework import permissions
 
 
 class IsAdminOrReadOnly(permissions.BasePermission):
-
+    """
+    Предоставляет права на осуществление запросов
+    только аутентифицированному пользователю с ролью admin.
+    """
     def has_permission(self, request, view):
-        return (
-            request.method in permissions.SAFE_METHODS
-            or request.user.is_authenticated
-        )
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        return (request.user.is_admin
+                if request.user.is_authenticated else False)
 
 
 class IsSuperUserOrIsAdminOnly(permissions.BasePermission):
@@ -24,13 +27,6 @@ class IsSuperUserOrIsAdminOnly(permissions.BasePermission):
                  or request.user.is_staff
                  or request.user.is_admin)
         )
-
-
-class AnonimReadOnly(permissions.BasePermission):
-    """Разрешает анонимному пользователю только безопасные запросы."""
-
-    def has_permission(self, request, view):
-        return request.method in permissions.SAFE_METHODS
 
 
 class IsSuperUserIsAdminIsModeratorIsAuthor(permissions.BasePermission):
@@ -50,4 +46,4 @@ class IsSuperUserIsAdminIsModeratorIsAuthor(permissions.BasePermission):
                  or request.user.is_admin
                  or request.user.is_moderator
                  or request.user == obj.author)
-                )
+        )

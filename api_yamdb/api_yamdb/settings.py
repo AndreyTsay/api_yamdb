@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     'api',
     'reviews',
     'rest_framework_simplejwt',
+    'djoser',
 
 ]
 
