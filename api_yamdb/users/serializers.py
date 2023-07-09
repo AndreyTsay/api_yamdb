@@ -20,7 +20,6 @@ class UserSerializer(serializers.ModelSerializer):
             'bio',
             'role'
         )
-        lookup_field = ('username',)
 
     def validate(self, validated_data):
         if 'username' in validated_data:
@@ -30,8 +29,8 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class TokenSerializer(serializers.ModelSerializer):
-    username = serializers.CharField(max_length=150)
-    confirmation_code = serializers.CharField(max_length=4)
+    username = serializers.CharField(max_length=150, required=True)
+    confirmation_code = serializers.CharField(max_length=10)
 
     class Meta:
         model = User

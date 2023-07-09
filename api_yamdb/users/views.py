@@ -1,13 +1,14 @@
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
-from rest_framework import viewsets, filters
-from rest_framework.decorators import action
+from rest_framework import viewsets, filters, permissions
+from rest_framework.decorators import action, api_view
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
+from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST, \
+    HTTP_404_NOT_FOUND, HTTP_201_CREATED
 from rest_framework.views import APIView
-from rest_framework_simplejwt.tokens import AccessToken
+from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 from rest_framework_simplejwt.views import TokenViewBase
 
 from users.models import User
@@ -24,7 +25,7 @@ EMAIL = "myemail@mail.ru"
 class UsersViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [IsAdmin]
+    permission_classes = [IsAdmin, ]
     filter_backends = [filters.SearchFilter]
     lookup_field = 'username'
     search_fields = ('username',)
@@ -33,16 +34,15 @@ class UsersViewSet(viewsets.ModelViewSet):
     @action(
         detail=False,
         methods=('GET', 'PATCH'),
-        permission_classes=[IsAuthenticated, ],
+        permission_classes=[IsAuthenticated, AllowAny],
     )
     def me(self, request):
-        user = get_object_or_404(User, username=self.request.user)
-        serializer = UserSerializer(user)
         if request.method == 'PATCH':
             serializer = UserSerializer(
-                user, data=request.data, partial=True)
+                request.user, data=request.data, partial=True)
             serializer.is_valid(raise_exception=True)
-            serializer.save()
+            serializer.save(role=request.user.role)
+        serializer = UserSerializer(request.user)
         return Response(serializer.data, status=HTTP_200_OK)
 
 
@@ -67,5 +67,21 @@ class SignUpViewSet(APIView):
         return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
 
 
-class TokenViewSet(TokenViewBase):
-    serializer_class = TokenSerializer
+class TokenViewSet(APIView):
+    def post(self, request):
+        serializer = TokenSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        if serializer.is_valid():
+            try:
+                user = User.objects.get(
+                    username=serializer.validated_data['username'])
+            except User.DoesNotExist:
+                return Response('Пользователь не найден!',
+                                status=HTTP_404_NOT_FOUND)
+            if serializer.validated_data['confirmation_code'] \
+                    == user.confirmation_code:
+                token = RefreshToken.for_user(user).access_token
+                return Response(token, status=HTTP_201_CREATED)
+            return Response('Неверный код подтверждения!',
+                            status=HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
