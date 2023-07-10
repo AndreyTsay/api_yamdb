@@ -8,16 +8,16 @@ ROLES = (
         (USER, 'Пользователь'),
         (MODERATOR, 'Модератор'),
         (ADMIN, 'Админ'),
-    )
+)
 
 
 class User(AbstractUser):
 
-    username = models.CharField(max_length=150, unique=True, 
+    username = models.CharField(max_length=150, unique=True,
                                 verbose_name='Никнейм пользователя')
     email = models.EmailField(max_length=254, unique=True,
                               verbose_name="Почта")
-    first_name = models.CharField(blank=True,  max_length=150,
+    first_name = models.CharField(blank=True, max_length=150,
                                   verbose_name="Имя")
     last_name = models.CharField(blank=True, max_length=150,
                                  verbose_name="Фамилия")
