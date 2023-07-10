@@ -1,11 +1,8 @@
 
 from django.urls import path, include
-from rest_framework import routers
 from rest_framework.routers import SimpleRouter
 
 from api import views
-from rest_framework_simplejwt.views import TokenObtainPairView
-
 from users.views import UsersViewSet, SignUpViewSet, TokenViewSet
 
 
@@ -19,7 +16,8 @@ router.register(r'titles/(?P<title_id>\d+)/reviews',
                 views.ReviewViewSet,
                 basename='reviews')
 router.register(
-    r'titles/(?P<title_id>\d+)/reviews', views.ReviewViewSet, basename='reviews'
+    r'titles/(?P<title_id>\d+)/reviews',
+    views.ReviewViewSet, basename='reviews'
 )
 router.register(
     r'titles/(?P<title_id>\d+)/reviews/(?P<review_id>\d+)/comments',

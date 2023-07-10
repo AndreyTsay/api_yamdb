@@ -1,27 +1,21 @@
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
-from django.shortcuts import get_object_or_404
-from rest_framework import viewsets, filters, permissions
-from rest_framework.decorators import action, api_view
+from rest_framework import viewsets, filters
+from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST, \
     HTTP_404_NOT_FOUND, HTTP_201_CREATED
+from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.views import APIView
-from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
-from rest_framework_simplejwt.views import TokenViewBase
 
 from users.models import User
-from users.serializers import UserSerializer, SignUpSerializer
-
-from users.serializers import TokenSerializer
-
 from users.permissions import IsAdmin
+from users.serializers import UserSerializer, SignUpSerializer, TokenSerializer
 
 EMAIL = "myemail@mail.ru"
 
 
-# Create your views here.
 class UsersViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
