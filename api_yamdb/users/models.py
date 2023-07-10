@@ -7,8 +7,7 @@ ADMIN = 'admin'
 ROLES = (
         (USER, 'Пользователь'),
         (MODERATOR, 'Модератор'),
-        (ADMIN, 'Админ'),
-        )
+        (ADMIN, 'Админ'),)
 
 
 class User(AbstractUser):
