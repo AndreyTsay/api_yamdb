@@ -1,14 +1,14 @@
 from rest_framework import serializers
 
-from reviews.models import Category, Genre, Title, Review, Comment
-from users.models import User
+import users.models
+import reviews.models
 
 
 class UserCreateSerializer(serializers.ModelSerializer):
     """Сериализатор для создания объекта класса User."""
 
     class Meta:
-        model = User
+        model = users.models.User
         fields = (
             'username', 'email'
         )
@@ -20,11 +20,11 @@ class UserCreateSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 'Использовать имя me запрещено'
             )
-        if User.objects.filter(username=data.get('username')):
+        if users.models.User.objects.filter(username=data.get('username')):
             raise serializers.ValidationError(
                 'Пользователь с таким username уже существует'
             )
-        if User.objects.filter(email=data.get('email')):
+        if users.models.User.objects.filter(email=data.get('email')):
             raise serializers.ValidationError(
                 'Пользователь с таким email уже существует'
             )
@@ -49,7 +49,7 @@ class UserSerializer(serializers.ModelSerializer):
     """Сериализатор для модели User."""
 
     class Meta:
-        model = User
+        model = users.models.User
         fields = (
             'username', 'email', 'first_name', 'last_name', 'bio', 'role'
         )
@@ -66,7 +66,7 @@ class CategorySerializer(serializers.ModelSerializer):
 
     class Meta:
         exclude = ('id', )
-        model = Category
+        model = reviews.models.Category
         lookup_field = 'slug'
 
 
@@ -74,7 +74,7 @@ class GenreSerializer(serializers.ModelSerializer):
 
     class Meta:
         exclude = ('id', )
-        model = Genre
+        model = reviews.models.Genre
         lookup_field = 'slug'
 
 
@@ -89,7 +89,7 @@ class TitleSerializer(serializers.ModelSerializer):
 
     class Meta:
         fields = '__all__'
-        model = Title
+        model = reviews.models.Title
 
 
 class TitleReadSerializer(serializers.ModelSerializer):
@@ -102,23 +102,23 @@ class TitleReadSerializer(serializers.ModelSerializer):
 
     class Meta:
         fields = '__all__'
-        model = Title
+        model = reviews.models.Title
 
 
 class TitleWriteSerializer(serializers.ModelSerializer):
     category = serializers.SlugRelatedField(
-        queryset=Category.objects.all(),
+        queryset=reviews.models.Category.objects.all(),
         slug_field='slug'
     )
     genre = serializers.SlugRelatedField(
-        queryset=Genre.objects.all(),
+        queryset=reviews.models.Genre.objects.all(),
         slug_field='slug',
         many=True
     )
 
     class Meta:
         fields = '__all__'
-        model = Title
+        model = reviews.models.Title
 
 
 class ReviewSerializer(serializers.ModelSerializer):
@@ -132,7 +132,7 @@ class ReviewSerializer(serializers.ModelSerializer):
         return obj.author.username
 
     class Meta:
-        model = Review
+        model = reviews.models.Review
         fields = ['id', 'title', 'author', 'text', 'score', 'pub_date']
         extra_kwargs = {
             'title': {'required': False},
@@ -148,5 +148,5 @@ class CommentSerializer(serializers.ModelSerializer):
     )
 
     class Meta:
-        model = Comment
+        model = reviews.models.Comment
         fields = ('id', 'text', 'author', 'pub_date',)

@@ -1,24 +1,16 @@
 from django.db.models import Avg
 from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import get_object_or_404
-from rest_framework import filters, viewsets, mixins, status
-from rest_framework import permissions
+from rest_framework import filters, status, permissions, viewsets
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.response import Response
 
 from api import serializers
 from api.filters import TitleFilter
+from api.mixins import GetPostDeleteViewSet
 from api.permissions import (IsAdminOrReadOnly, IsSuperUserOrIsAdminOnly,
                              IsSuperUserIsAdminIsModeratorIsAuthor)
 from reviews.models import Category, Genre, Title, Review
-
-
-class GetPostDeleteViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
-                           mixins.ListModelMixin, viewsets.GenericViewSet):
-    permission_classes = (IsAdminOrReadOnly or IsSuperUserOrIsAdminOnly,)
-    filter_backends = (filters.SearchFilter,)
-    search_fields = ('name',)
-    lookup_field = 'slug'
 
 
 class GenreViewSet(GetPostDeleteViewSet):

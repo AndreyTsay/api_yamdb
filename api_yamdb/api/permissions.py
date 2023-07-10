@@ -7,10 +7,8 @@ class IsAdminOrReadOnly(permissions.BasePermission):
     только аутентифицированному пользователю с ролью admin.
     """
     def has_permission(self, request, view):
-        if request.method in permissions.SAFE_METHODS:
-            return True
-        return (request.user.is_admin
-                if request.user.is_authenticated else False)
+        return (request.method in permissions.SAFE_METHODS
+                or request.user.is_authenticated and request.user.is_admin)
 
 
 class IsSuperUserOrIsAdminOnly(permissions.BasePermission):

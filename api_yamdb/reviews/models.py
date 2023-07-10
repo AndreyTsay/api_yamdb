@@ -1,11 +1,10 @@
-from datetime import datetime
-
 from django.core.validators import (MinValueValidator,
-                                    MaxValueValidator, RegexValidator)
+                                    MaxValueValidator)
 from django.db import models
 
 from api_yamdb.settings import LENGTH_TEXT
 from users.models import User
+from reviews.validators import validate_username, validate_year
 
 
 class Category(models.Model):
@@ -15,10 +14,7 @@ class Category(models.Model):
     slug = models.SlugField(
         max_length=50,
         unique=True,
-        validators=[RegexValidator(
-            regex=r'^[-a-zA-Z0-9_]+$',
-            message='Слаг категории содержит недопустимый символ'
-        )]
+        validators=(validate_username, )
     )
 
     class Meta:
@@ -39,10 +35,7 @@ class Genre(models.Model):
         max_length=50,
         verbose_name='slug',
         unique=True,
-        validators=[RegexValidator(
-            regex=r'^[-a-zA-Z0-9_]+$',
-            message='Слаг жанра содержит недопустимый символ'
-        )]
+        validators=(validate_username, )
     )
 
     class Meta:
@@ -62,16 +55,7 @@ class Title(models.Model):
     )
     year = models.PositiveIntegerField(
         verbose_name='год выпуска',
-        validators=[
-            MinValueValidator(
-                0,
-                message='Значение года не может быть отрицательным'
-            ),
-            MaxValueValidator(
-                int(datetime.now().year),
-                message='Значение года не может быть больше текущего'
-            )
-        ],
+        validators=(validate_year, ),
         db_index=True
     )
     description = models.TextField(

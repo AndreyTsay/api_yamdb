@@ -1,14 +1,13 @@
-from rest_framework import mixins, viewsets
-from rest_framework.filters import SearchFilter
+from rest_framework import filters, mixins, viewsets
 from rest_framework.pagination import LimitOffsetPagination
 
-from api.permissions import IsAdminOrReadOnly
+from api.permissions import IsAdminOrReadOnly, IsSuperUserOrIsAdminOnly
 
 
-class ModelMixinViewSet(mixins.CreateModelMixin, mixins.ListModelMixin,
-                        mixins.DestroyModelMixin, viewsets.GenericViewSet):
+class GetPostDeleteViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
+                           mixins.ListModelMixin, viewsets.GenericViewSet):
+    permission_classes = (IsAdminOrReadOnly or IsSuperUserOrIsAdminOnly,)
     pagination_class = LimitOffsetPagination
-    permission_classes = (IsAdminOrReadOnly,)
-    filter_backends = (SearchFilter,)
-    search_fields = ('name', )
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('name',)
     lookup_field = 'slug'
