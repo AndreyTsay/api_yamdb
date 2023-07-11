@@ -14,7 +14,7 @@ from api.filters import TitleFilter
 from api.mixins import GetPostDeleteViewSet
 from api.permissions import (IsAdminOrReadOnly, IsSuperUserOrIsAdminOnly,
                              IsSuperUserIsAdminIsModeratorIsAuthor, IsAdmin)
-from rest_framework.status import (HTTP_404_NOT_FOUND, HTTP_201_CREATED,
+from rest_framework.status import (HTTP_201_CREATED,
                                    HTTP_400_BAD_REQUEST, HTTP_200_OK)
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -144,17 +144,13 @@ class SignUpViewSet(APIView):
     def post(self, request):
         serializer = serializers.SignUpSerializer(data=request.data)
         if serializer.is_valid():
-            try:
-                user = User.objects.get_or_create(
-                    username=serializer.validated_data['username'],
-                    email=serializer.validated_data['email'])[0]
-                confirmation_code = default_token_generator.make_token(user)
-                send_mail("Код подтверждения:", f"{confirmation_code}", EMAIL,
-                          [user.email])
-                return Response(serializer.data, status=HTTP_200_OK)
-            except Exception:
-                return Response('Вы уже зарегистрированы!',
-                                status=HTTP_400_BAD_REQUEST)
+            user = User.objects.get_or_create(
+                username=serializer.validated_data['username'],
+                email=serializer.validated_data['email'])[0]
+            confirmation_code = default_token_generator.make_token(user)
+            send_mail("Код подтверждения:", f"{confirmation_code}", EMAIL,
+                      [user.email])
+            return Response(serializer.data, status=HTTP_200_OK)
         return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
 
 
@@ -163,14 +159,10 @@ class TokenViewSet(APIView):
         serializer = serializers.TokenSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         if serializer.is_valid():
-            try:
-                user = User.objects.get(
-                    username=serializer.validated_data['username'])
-            except User.DoesNotExist:
-                return Response('Пользователь не найден!',
-                                status=HTTP_404_NOT_FOUND)
-            if serializer.validated_data['confirmation_code'] \
-                    == user.confirmation_code:
+            user = get_object_or_404(User, username=serializer.
+                                     validated_data['username'])
+            if (serializer.validated_data['confirmation_code']
+                    == user.confirmation_code):
                 token = RefreshToken.for_user(user).access_token
                 return Response(token, status=HTTP_201_CREATED)
             return Response('Неверный код подтверждения!',

@@ -1,5 +1,3 @@
-import re
-
 from rest_framework import serializers
 
 import reviews.models
@@ -7,7 +5,7 @@ from rest_framework.validators import UniqueValidator
 
 from users.models import User
 
-from users.validators import validate_me
+from api.validators import validate_me
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -103,8 +101,7 @@ class UserSerializer(serializers.ModelSerializer):
                     UniqueValidator(queryset=User.objects.all()), ])
 
     email = serializers.EmailField(max_length=254, required=True,
-                                   validators=[UniqueValidator]
-                                   )
+                                   validators=[UniqueValidator])
 
     class Meta:
         model = User
@@ -116,12 +113,6 @@ class UserSerializer(serializers.ModelSerializer):
             'bio',
             'role'
         )
-
-    def validate(self, validated_data):
-        if 'username' in validated_data:
-            if not re.match(r'[\w.@+-]+\Z', validated_data['username']):
-                raise serializers.ValidationError('Такой username запрещен.')
-        return validated_data
 
     def validate_email(self, validated_data):
         if User.objects.filter(email=validated_data).exists():
@@ -141,7 +132,8 @@ class TokenSerializer(serializers.ModelSerializer):
 
 
 class SignUpSerializer(serializers.ModelSerializer):
-    username = serializers.CharField(max_length=150)
+    username = serializers.CharField(max_length=150,
+                                     validators=[validate_me, ])
     email = serializers.EmailField(max_length=254)
 
     class Meta:
@@ -149,7 +141,13 @@ class SignUpSerializer(serializers.ModelSerializer):
         fields = ('username', 'email',)
 
     def validate(self, validated_data):
-        if validated_data['username'] == 'me' or \
-                not re.match(r'[\w.@+-]+\Z', validated_data['username']):
-            raise serializers.ValidationError('Такой username запрещен.')
+        if User.objects.filter(username=validated_data['username'],
+                               email=validated_data['email']).exists():
+            return validated_data
+        if (User.objects.filter(username=validated_data['username']).exists()
+                or User.objects.filter(
+                    email=validated_data['email']).exists()):
+            raise serializers.ValidationError(
+                'Вы уже зарегистрированы!'
+            )
         return validated_data
