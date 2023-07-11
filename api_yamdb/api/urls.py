@@ -3,8 +3,8 @@ from django.urls import path, include
 from rest_framework.routers import SimpleRouter
 
 from api import views
-from users.views import UsersViewSet, SignUpViewSet, TokenViewSet
 
+from api.views import UsersViewSet, TokenViewSet, SignUpViewSet
 
 router = SimpleRouter()
 

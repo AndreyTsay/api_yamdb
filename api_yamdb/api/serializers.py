@@ -1,79 +1,23 @@
 from rest_framework import serializers
 
-import users.models
 import reviews.models
+from rest_framework.validators import UniqueValidator
 
+from users.models import User
 
-class UserCreateSerializer(serializers.ModelSerializer):
-    """Сериализатор для создания объекта класса User."""
-
-    class Meta:
-        model = users.models.User
-        fields = (
-            'username', 'email'
-        )
-
-    def validate(self, data):
-        """Запрещает пользователям присваивать себе имя me
-        и использовать повторные username и email."""
-        if data.get('username') == 'me':
-            raise serializers.ValidationError(
-                'Использовать имя me запрещено'
-            )
-        if users.models.User.objects.filter(username=data.get('username')):
-            raise serializers.ValidationError(
-                'Пользователь с таким username уже существует'
-            )
-        if users.models.User.objects.filter(email=data.get('email')):
-            raise serializers.ValidationError(
-                'Пользователь с таким email уже существует'
-            )
-        return data
-
-
-class UserRecieveTokenSerializer(serializers.Serializer):
-    """Сериализатор для объекта класса User при получении токена JWT."""
-
-    username = serializers.RegexField(
-        regex=r'^[\w.@+-]+$',
-        max_length=150,
-        required=True
-    )
-    confirmation_code = serializers.CharField(
-        max_length=150,
-        required=True
-    )
-
-
-class UserSerializer(serializers.ModelSerializer):
-    """Сериализатор для модели User."""
-
-    class Meta:
-        model = users.models.User
-        fields = (
-            'username', 'email', 'first_name', 'last_name', 'bio', 'role'
-        )
-
-    def validate_username(self, username):
-        if username in 'me':
-            raise serializers.ValidationError(
-                'Использовать имя me запрещено'
-            )
-        return username
+from api.validators import validate_me
 
 
 class CategorySerializer(serializers.ModelSerializer):
-
     class Meta:
-        exclude = ('id', )
+        exclude = ('id',)
         model = reviews.models.Category
         lookup_field = 'slug'
 
 
 class GenreSerializer(serializers.ModelSerializer):
-
     class Meta:
-        exclude = ('id', )
+        exclude = ('id',)
         model = reviews.models.Genre
         lookup_field = 'slug'
 
@@ -122,7 +66,6 @@ class TitleWriteSerializer(serializers.ModelSerializer):
 
 
 class ReviewSerializer(serializers.ModelSerializer):
-
     author = serializers.SlugRelatedField(
         slug_field='username',
         read_only=True
@@ -141,7 +84,6 @@ class ReviewSerializer(serializers.ModelSerializer):
 
 
 class CommentSerializer(serializers.ModelSerializer):
-
     author = serializers.SlugRelatedField(
         slug_field='username',
         read_only=True
@@ -150,3 +92,62 @@ class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = reviews.models.Comment
         fields = ('id', 'text', 'author', 'pub_date',)
+
+
+class UserSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(
+        max_length=150, required=True,
+        validators=[validate_me,
+                    UniqueValidator(queryset=User.objects.all()), ])
+
+    email = serializers.EmailField(max_length=254, required=True,
+                                   validators=[UniqueValidator])
+
+    class Meta:
+        model = User
+        fields = (
+            'username',
+            'email',
+            'first_name',
+            'last_name',
+            'bio',
+            'role'
+        )
+
+    def validate_email(self, validated_data):
+        if User.objects.filter(email=validated_data).exists():
+            raise serializers.ValidationError(
+                'Аккаунт с таким email уже существует.'
+            )
+        return validated_data
+
+
+class TokenSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(max_length=150, required=True)
+    confirmation_code = serializers.CharField(max_length=10)
+
+    class Meta:
+        model = User
+        fields = ('username', 'confirmation_code',)
+
+
+class SignUpSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(max_length=150,
+                                     validators=[validate_me, ])
+    email = serializers.EmailField(max_length=254)
+
+    class Meta:
+        model = User
+        fields = ('username', 'email',)
+
+    def validate(self, validated_data):
+        if User.objects.filter(username=validated_data['username'],
+                               email=validated_data['email']).exists():
+            return validated_data
+        if (User.objects.filter(username=validated_data['username']).exists()
+                or User.objects.filter(
+                    email=validated_data['email']).exists()):
+            raise serializers.ValidationError(
+                'Вы уже зарегистрированы!'
+            )
+        return validated_data

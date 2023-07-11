@@ -5,20 +5,20 @@ USER = 'user'
 MODERATOR = 'moderator'
 ADMIN = 'admin'
 ROLES = (
-        (USER, 'Пользователь'),
-        (MODERATOR, 'Модератор'),
-        (ADMIN, 'Админ'),)
+    (USER, 'Пользователь'),
+    (MODERATOR, 'Модератор'),
+    (ADMIN, 'Админ'),)
+LENGTH = 150
 
 
 class User(AbstractUser):
-
-    username = models.CharField(max_length=150, unique=True,
+    username = models.CharField(max_length=LENGTH, unique=True,
                                 verbose_name='Никнейм пользователя')
     email = models.EmailField(max_length=254, unique=True,
                               verbose_name="Почта")
-    first_name = models.CharField(blank=True, max_length=150,
+    first_name = models.CharField(blank=True, max_length=LENGTH,
                                   verbose_name="Имя")
-    last_name = models.CharField(blank=True, max_length=150,
+    last_name = models.CharField(blank=True, max_length=LENGTH,
                                  verbose_name="Фамилия")
     bio = models.TextField(blank=True, verbose_name="Инфа о пользователе")
 
