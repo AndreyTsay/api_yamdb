@@ -64,7 +64,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'api_yamdb.wsgi.application'
 
-# Database
 
 DATABASES = {
     'default': {
@@ -73,7 +72,6 @@ DATABASES = {
     }
 }
 
-# Password validation
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -90,7 +88,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# Internationalization
 
 LANGUAGE_CODE = 'en-us'
 
@@ -102,7 +99,6 @@ USE_L10N = True
 
 USE_TZ = True
 
-# Static files (CSS, JavaScript, Images)
 
 STATIC_URL = '/static/'
 
