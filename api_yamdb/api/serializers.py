@@ -71,11 +71,17 @@ class ReviewSerializer(serializers.ModelSerializer):
         read_only=True
     )
 
-    def get_author(self, obj):
-        return obj.author.username
+    def validate(self, data):
+        if reviews.models.Review.objects.filter(
+            author=self.context['request'].user,
+            title_id=self.context['view'].kwargs.get('title_id')
+        ).exists() and self.context['request'].method == 'POST':
+            raise serializers.ValidationError('Отзыв уже оставлен!')
+        return data
 
     class Meta:
         model = reviews.models.Review
+        read_only_fields = ('title', 'author')
         fields = ['id', 'title', 'author', 'text', 'score', 'pub_date']
         extra_kwargs = {
             'title': {'required': False},

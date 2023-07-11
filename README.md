@@ -1,4 +1,3 @@
-<!DOCTYPE html><html><head><meta charset="utf-8">
 <h1 class="code-line" data-line-start="0" data-line-end="1"><a id="API_FINAL_YATUBE_0"></a>API_YAMDB</h1>
 <p class="has-line-data" data-line-start="4" data-line-end="5">Проект YaMDb собирает отзывы пользователей на произведения. Сами произведения в YaMDb не хранятся, здесь нельзя посмотреть фильм или послушать музыку.
 
@@ -24,11 +23,14 @@ cd yatube_api<br>
 pip install -r requirements.txt<br>
 Выполняем миграции:<br>
 python <a href="http://manage.py">manage.py</a> migrate<br>
+Импортируем файл csv:<br>
+python3 manage.py import_csv<br>
 Создаем суперпользователя:<br>
 python <a href="http://manage.py">manage.py</a> createsuperuser<br>
 Запускаем проект:<br>
 python <a href="http://manage.py">manage.py</a> runserver</p>
-<pre><code class="has-line-data" data-line-start="58" data-line-end="60">
-
-</code></pre>
-</body></html>
+<h2 class="code-line" data-line-start="41" data-line-end="42"><a id="Creators"></a>Creators</h2>
+<p class="has-line-data" data-line-start="43" data-line-end="57">Над данным проектом работала команда студентов Яндекс Практикума.<br>
+Цай Андрей | AndreyTsay <br>
+Ольга Белова | blwolhppt <br>
+Ян Свиридов | YanSv15<br>

@@ -4,7 +4,7 @@ from django.db import models
 
 from api_yamdb.settings import LENGTH_TEXT
 from users.models import User
-from reviews.validators import validate_username, validate_year
+from api.validators import validate_me, validate_year
 
 
 class Category(models.Model):
@@ -14,7 +14,7 @@ class Category(models.Model):
     slug = models.SlugField(
         max_length=50,
         unique=True,
-        validators=(validate_username, )
+        validators=(validate_me, )
     )
 
     class Meta:
@@ -35,7 +35,7 @@ class Genre(models.Model):
         max_length=50,
         verbose_name='slug',
         unique=True,
-        validators=(validate_username, )
+        validators=(validate_me, )
     )
 
     class Meta:

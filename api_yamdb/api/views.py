@@ -1,25 +1,26 @@
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.db.models import Avg
-from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import get_object_or_404
-from rest_framework import filters, status, permissions, viewsets
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters, permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.pagination import LimitOffsetPagination
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.status import (HTTP_201_CREATED,
+                                   HTTP_400_BAD_REQUEST, HTTP_200_OK)
+from rest_framework.views import APIView
 
 from api import serializers
 from api.filters import TitleFilter
 from api.mixins import GetPostDeleteViewSet
-from api.permissions import (IsAdminOrReadOnly, IsSuperUserOrIsAdminOnly,
-                             IsSuperUserIsAdminIsModeratorIsAuthor, IsAdmin)
-from rest_framework.status import (HTTP_201_CREATED,
-                                   HTTP_400_BAD_REQUEST, HTTP_200_OK)
-from rest_framework.views import APIView
-from rest_framework_simplejwt.tokens import RefreshToken
-from reviews.models import Category, Genre, Title, Review
+from api.permissions import (IsAdmin, IsAdminOrReadOnly,
+                             IsSuperUserOrIsAdminOnly,
+                             IsSuperUserIsAdminIsModeratorIsAuthor)
 
+from reviews.models import Category, Genre, Title, Review
 from users.models import User
 
 EMAIL = "myemail@mail.ru"
@@ -73,13 +74,6 @@ class ReviewViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         title = get_object_or_404(Title, id=self.kwargs['title_id'])
         user = request.user
-
-        if Review.objects.filter(author=user, title=title).exists():
-            return Response(
-                {'detail': 'Отзыв уже оставлен!'},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save(author=user, title=title)
