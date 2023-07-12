@@ -130,28 +130,26 @@ class SignUpViewSet(APIView):
 
     def post(self, request):
         serializer = serializers.SignUpSerializer(data=request.data)
-        if serializer.is_valid():
-            user = User.objects.get_or_create(
-                username=serializer.validated_data['username'],
-                email=serializer.validated_data['email'])[0]
-            confirmation_code = default_token_generator.make_token(user)
-            send_mail("Код подтверждения:", f"{confirmation_code}", EMAIL,
-                      [user.email])
-            return Response(serializer.data, status=HTTP_200_OK)
-        return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
+        serializer.is_valid(raise_exception=True)
+        user = User.objects.get_or_create(
+            username=serializer.validated_data['username'],
+            email=serializer.validated_data['email'])[0]
+        confirmation_code = default_token_generator.make_token(user)
+        send_mail("Код подтверждения:", f"{confirmation_code}", EMAIL,
+                  [user.email])
+        return Response(serializer.data, status=HTTP_200_OK)
 
 
 class TokenViewSet(APIView):
     def post(self, request):
         serializer = serializers.TokenSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        if serializer.is_valid():
-            user = get_object_or_404(User, username=serializer.
-                                     validated_data['username'])
-            if (serializer.validated_data['confirmation_code']
-                    == user.confirmation_code):
-                token = RefreshToken.for_user(user).access_token
-                return Response(token, status=HTTP_201_CREATED)
-            return Response('Неверный код подтверждения!',
-                            status=HTTP_400_BAD_REQUEST)
-        return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
+        user = get_object_or_404(User, username=serializer.
+                                 validated_data['username'])
+        if (serializer.validated_data['confirmation_code']
+                == user.confirmation_code):
+            token = RefreshToken.for_user(user).access_token
+            return Response(token, status=HTTP_201_CREATED)
+        return Response('Неверный код подтверждения!',
+                        status=HTTP_400_BAD_REQUEST)
+
