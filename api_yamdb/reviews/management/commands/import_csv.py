@@ -4,7 +4,7 @@ from django.core.management.base import BaseCommand
 from django.shortcuts import get_object_or_404
 from django.conf import settings
 
-from reviews.models import Category, Comment, Genre, Review, Title, GenreTitle
+from reviews.models import Category, Comment, Genre, Review, Title
 from users.models import User
 
 
@@ -49,18 +49,6 @@ class Command(BaseCommand):
                 category=obj_category
             )
         print('titles - OK')
-
-        csv_reader = get_reader('genre_title.csv')
-        next(csv_reader, None)
-        for row in csv_reader:
-            obj_genre = get_object_or_404(Genre, id=row[2])
-            obj_title = get_object_or_404(Title, id=row[1])
-            obj, created = GenreTitle.objects.get_or_create(
-                id=row[0],
-                genre=obj_genre,
-                title=obj_title
-            )
-        print('genre_titles - OK')
 
         csv_reader = get_reader('users.csv')
         next(csv_reader, None)

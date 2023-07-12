@@ -3,7 +3,6 @@ from django.urls import path, include
 from rest_framework.routers import SimpleRouter
 
 from api import views
-
 from api.views import UsersViewSet, TokenViewSet, SignUpViewSet
 
 router = SimpleRouter()

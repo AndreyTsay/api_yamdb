@@ -3,8 +3,9 @@ from django.core.validators import (MinValueValidator,
 from django.db import models
 
 from api_yamdb.settings import LENGTH_TEXT
+from api.validators import validate_slug
+from reviews.validators import validate_year
 from users.models import User
-from api.validators import validate_me, validate_year
 
 
 class Category(models.Model):
@@ -14,7 +15,7 @@ class Category(models.Model):
     slug = models.SlugField(
         max_length=50,
         unique=True,
-        validators=(validate_me, )
+        validators=(validate_slug, )
     )
 
     class Meta:
@@ -35,7 +36,7 @@ class Genre(models.Model):
         max_length=50,
         verbose_name='slug',
         unique=True,
-        validators=(validate_me, )
+        validators=(validate_slug, )
     )
 
     class Meta:
@@ -64,7 +65,6 @@ class Title(models.Model):
     )
     genre = models.ManyToManyField(
         Genre,
-        through='GenreTitle',
         related_name='titles',
         verbose_name='жанр'
 
@@ -84,19 +84,6 @@ class Title(models.Model):
 
     def __str__(self):
         return self.name[:LENGTH_TEXT]
-
-
-class GenreTitle(models.Model):
-    genre = models.ForeignKey(
-        Genre,
-        on_delete=models.CASCADE,
-        verbose_name='Жанр'
-    )
-    title = models.ForeignKey(
-        Title,
-        on_delete=models.CASCADE,
-        verbose_name='произведение'
-    )
 
 
 class Review(models.Model):
