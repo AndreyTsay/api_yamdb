@@ -3,8 +3,7 @@ from django.core.validators import (MinValueValidator,
 from django.db import models
 
 from api_yamdb.settings import LENGTH_TEXT
-from api.validators import validate_slug
-from reviews.validators import validate_year
+from reviews import validators
 from users.models import User
 
 
@@ -15,7 +14,7 @@ class Category(models.Model):
     slug = models.SlugField(
         max_length=50,
         unique=True,
-        validators=(validate_slug, )
+        validators=(validators.validate_slug, )
     )
 
     class Meta:
@@ -36,7 +35,7 @@ class Genre(models.Model):
         max_length=50,
         verbose_name='slug',
         unique=True,
-        validators=(validate_slug, )
+        validators=(validators.validate_slug, )
     )
 
     class Meta:
@@ -56,7 +55,7 @@ class Title(models.Model):
     )
     year = models.PositiveIntegerField(
         verbose_name='год выпуска',
-        validators=(validate_year, ),
+        validators=(validators.validate_year, ),
         db_index=True
     )
     description = models.TextField(
