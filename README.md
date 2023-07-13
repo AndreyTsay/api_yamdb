@@ -12,30 +12,30 @@
 
 API_FINAL_YATUBE использует следующие технологии:
 
-Python 3.11,
-Django 4.2,
-DRF,
-JWT + Djoser
+- Python 3.11,
+- Django 4.2,
+- DRF,
+- JWT + Djoser
 
 
 ## Installation
 
 Клонировать репозиторий и перейти в него в командной строке.
 Установите и активируйте виртуальное окружение
-python -m venv venv
-source venv/Scripts/activate
-python -m pip install --upgrade pip
+`python -m venv venv`
+`source venv/Scripts/activate`
+`python -m pip install --upgrade pip`
 Затем нужно установить все зависимости из файла requirements.txt
-cd yatube_api
-pip install -r requirements.txt
+`cd yatube_api`
+`pip install -r requirements.txt`
 Выполняем миграции:
-python manage.py migrate
+`python manage.py migrate`
 Импортируем файл csv:
-python3 manage.py import_csv
+`python3 manage.py import_csv`
 Создаем суперпользователя:
-python manage.py createsuperuser
+`python manage.py createsuperuser`
 Запускаем проект:
-python manage.py runserver
+`python manage.py runserver`
 ## Creators
 Над данным проектом работала команда студентов Яндекс Практикума.
 Цай Андрей | AndreyTsay 

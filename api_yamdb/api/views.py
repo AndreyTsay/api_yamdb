@@ -3,10 +3,11 @@ from django.core.mail import send_mail
 from django.db.models import Avg
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters, permissions, viewsets
+from rest_framework import filters, viewsets
 from rest_framework.decorators import action
 from rest_framework.pagination import LimitOffsetPagination
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import (AllowAny, IsAuthenticated,
+                                        IsAuthenticatedOrReadOnly)
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.status import (HTTP_201_CREATED,
@@ -17,7 +18,6 @@ from api import serializers
 from api.filters import TitleFilter
 from api.mixins import GetPostDeleteViewSet
 from api.permissions import (IsAdmin, IsAdminOrReadOnly,
-                             IsSuperUserOrIsAdminOnly,
                              IsSuperUserIsAdminIsModeratorIsAuthor)
 from reviews.models import Category, Genre, Title, Review
 from users.models import User
@@ -29,7 +29,6 @@ class GenreViewSet(GetPostDeleteViewSet):
     queryset = Genre.objects.all()
     serializer_class = serializers.GenreSerializer
     pagination_class = LimitOffsetPagination
-    permission_classes = (IsAdminOrReadOnly,)
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
     search_fields = ('name',)
     lookup_field = 'slug'
@@ -38,7 +37,6 @@ class GenreViewSet(GetPostDeleteViewSet):
 class CategoryViewSet(GetPostDeleteViewSet):
     queryset = Category.objects.all()
     serializer_class = serializers.CategorySerializer
-    permission_classes = (IsAdminOrReadOnly,)
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
     search_fields = ('name',)
     lookup_field = 'slug'
@@ -49,7 +47,7 @@ class TitleViewSet(viewsets.ModelViewSet):
         rating=Avg('reviews__score')
     ).all()
     serializer_class = serializers.TitleSerializer
-    permission_classes = (IsAdminOrReadOnly or IsSuperUserOrIsAdminOnly,)
+    permission_classes = [IsAdminOrReadOnly, ]
     filter_backends = (DjangoFilterBackend,)
     filterset_class = TitleFilter
 
@@ -63,8 +61,8 @@ class ReviewViewSet(viewsets.ModelViewSet):
     queryset = Review.objects.all()
     serializer_class = serializers.ReviewSerializer
     pagination_class = LimitOffsetPagination
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,
-                          IsSuperUserIsAdminIsModeratorIsAuthor)
+    permission_classes = [IsAuthenticatedOrReadOnly,
+                          IsSuperUserIsAdminIsModeratorIsAuthor, ]
 
     def get_queryset(self):
         title = get_object_or_404(Title, id=self.kwargs['title_id'])
@@ -79,8 +77,8 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.CommentSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,
-                          IsSuperUserIsAdminIsModeratorIsAuthor)
+    permission_classes = [IsAuthenticatedOrReadOnly,
+                          IsSuperUserIsAdminIsModeratorIsAuthor, ]
 
     def get_review(self):
         """Возвращает объект текущего отзыва."""
