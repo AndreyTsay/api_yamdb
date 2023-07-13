@@ -131,9 +131,9 @@ class SignUpViewSet(APIView):
     def post(self, request):
         serializer = serializers.SignUpSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        user = User.objects.get_or_create(
+        user, _ = User.objects.get_or_create(
             username=serializer.validated_data['username'],
-            email=serializer.validated_data['email'])[0]
+            email=serializer.validated_data['email'])
         confirmation_code = default_token_generator.make_token(user)
         send_mail("Код подтверждения:", f"{confirmation_code}", EMAIL,
                   [user.email])
