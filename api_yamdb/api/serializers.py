@@ -2,7 +2,7 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
 import reviews.models
-from api.validators import validate_slug
+from api.validators import validate_username
 from users.models import User
 
 
@@ -101,7 +101,7 @@ class CommentSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     username = serializers.CharField(
         max_length=150, required=True,
-        validators=[validate_slug,
+        validators=[validate_username,
                     UniqueValidator(queryset=User.objects.all()), ])
 
     email = serializers.EmailField(max_length=254, required=True,
@@ -137,7 +137,7 @@ class TokenSerializer(serializers.ModelSerializer):
 
 class SignUpSerializer(serializers.ModelSerializer):
     username = serializers.CharField(max_length=150,
-                                     validators=[validate_slug, ])
+                                     validators=[validate_username, ])
     email = serializers.EmailField(max_length=254)
 
     class Meta:

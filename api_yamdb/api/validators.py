@@ -3,11 +3,12 @@ import re
 from django.core.exceptions import ValidationError
 
 
-def validate_slug(username):
+def validate_username(username):
+    forbidden_symb = re.sub(r"^[\w.@+-]+\Z", ' ', username)
     if username == 'me':
         raise ValidationError('Недопустимое имя пользователя!')
-
-    if re.search(r'^[\w.@+-]+\Z', username) is None:
+    elif username in forbidden_symb:
         raise ValidationError(
-            f'Не допустимые символы <{username}> в нике.'
+            f"Не допустимые символы <{username}> в имени пользователя"
         )
+    return username
