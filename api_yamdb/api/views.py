@@ -17,7 +17,7 @@ from rest_framework.views import APIView
 from api import serializers
 from api.filters import TitleFilter
 from api.mixins import GetPostDeleteViewSet
-from api.permissions import (IsAdmin, IsAdminOrReadOnly,
+from api.permissions import (IsAdmin, ReadOnly, AdminOrStaffRole,
                              IsSuperUserIsAdminIsModeratorIsAuthor)
 from reviews.models import Category, Genre, Title, Review
 from users.models import User
@@ -29,6 +29,8 @@ class GenreViewSet(GetPostDeleteViewSet):
     queryset = Genre.objects.all()
     serializer_class = serializers.GenreSerializer
     pagination_class = LimitOffsetPagination
+    permission_classes = [ReadOnly
+                          | IsAuthenticatedOrReadOnly & AdminOrStaffRole]
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
     search_fields = ('name',)
     lookup_field = 'slug'
@@ -37,6 +39,8 @@ class GenreViewSet(GetPostDeleteViewSet):
 class CategoryViewSet(GetPostDeleteViewSet):
     queryset = Category.objects.all()
     serializer_class = serializers.CategorySerializer
+    permission_classes = [ReadOnly
+                          | IsAuthenticatedOrReadOnly & AdminOrStaffRole]
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
     search_fields = ('name',)
     lookup_field = 'slug'
@@ -47,8 +51,9 @@ class TitleViewSet(viewsets.ModelViewSet):
         rating=Avg('reviews__score')
     ).all()
     serializer_class = serializers.TitleSerializer
-    permission_classes = [IsAdminOrReadOnly, ]
-    filter_backends = (DjangoFilterBackend,)
+    permission_classes = [ReadOnly
+                          | IsAuthenticatedOrReadOnly & AdminOrStaffRole]
+    filter_backends = (DjangoFilterBackend, )
     filterset_class = TitleFilter
 
     def get_serializer_class(self):
@@ -101,7 +106,7 @@ class CommentViewSet(viewsets.ModelViewSet):
 class UsersViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = serializers.UserSerializer
-    permission_classes = [IsAdmin, ]
+    permission_classes = [IsAuthenticated, IsAdmin]
     filter_backends = [filters.SearchFilter]
     lookup_field = 'username'
     search_fields = ('username',)
